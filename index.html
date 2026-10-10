@@ -1,0 +1,876 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Fat Stack Trade Values</title><meta name="description" content="Power rankings, trade calculator, roster compare and player values for the Fat Stack league."><meta property="og:type" content="website"><meta property="og:url" content="https://tconway13.github.io/fatstack/"><meta property="og:title" content="Fat Stack Trade Values"><meta property="og:description" content="Power rankings, trade calculator, roster compare and player values for the Fat Stack league."><meta property="og:image" content="https://tconway13.github.io/fatstack/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><style>body{margin:0}</style></head><body><title>Fat Stack Trade Values</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<style>
+/* Layout: dark fantasy-app look (deep navy, lighter cards, teal accent, colour-coded positions).
+   Tabbed pages: power rankings, calculator, roster compare, value board. Dark-only by design. */
+:root {
+  --bg: #0f1520;
+  --panel: #18202e;
+  --panel-2: #222c3d;
+  --line: #2a3548;
+  --ink: #ffffff;
+  --muted: #8a97ab;
+  --accent: #00ceb8;
+  --accent-ink: #0b1219;
+  --accent-soft: #0f3a3a;
+  --good: #00ceb8;
+  --good-soft: #0f3a3a;
+  --bad: #ff4b6e;
+  --bad-soft: #3d1a27;
+  --shop: #b57bff;
+  --shop-soft: #2e2347;
+  --fa: #ffc542;
+  --fa-soft: #3a3016;
+  --fa-row: #221f17;
+  --mine-row: #142a2f;
+  --pos-qb: #ff2a6d;
+  --pos-rb: #00ceb8;
+  --pos-wr: #58a7ff;
+  --pos-te: #ffae58;
+  --font-display: "Poppins", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 28px; }
+h1, h2 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .5px; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(38px, 7vw, 64px); font-weight: 800; line-height: .95; }
+h1 span { color: var(--accent); }
+h2 { font-size: 26px; font-weight: 700; }
+.eyebrow { font-family: var(--font-display); font-weight: 700; letter-spacing: 3px; font-size: 14px; color: var(--accent); text-transform: uppercase; }
+.lede { color: var(--muted); max-width: 65ch; margin: 8px 0 0; }
+.num { font-variant-numeric: tabular-nums; }
+header { display: grid; gap: 6px; }
+
+/* Calculator */
+.calc { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 18px; }
+.calc-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px; }
+.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.side { background: var(--panel-2); border-radius: 10px; padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.side label { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+select, input[type="search"], input[type="text"] {
+  font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 10px; width: 100%; min-width: 0;
+}
+select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: grid; gap: 6px; }
+.chip { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px 7px 10px; }
+.chip .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.chip .who small { font-weight: 500; color: var(--muted); margin-left: 6px; }
+.chip .v { font-weight: 700; }
+.x { border: 0; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+.x:hover { background: var(--panel-2); color: var(--ink); }
+.empty { color: var(--muted); font-size: 14px; padding: 6px 2px; }
+.side-total { display: flex; justify-content: space-between; font-weight: 700; padding-top: 4px; border-top: 1px dashed var(--line); }
+
+.verdict { display: grid; gap: 10px; }
+.balance { position: relative; height: 14px; border-radius: 7px; background: var(--panel-2); overflow: hidden; }
+.balance .a, .balance .b { position: absolute; top: 0; bottom: 0; }
+.balance .a { left: 0; background: var(--accent); }
+.balance .b { right: 0; background: var(--muted); opacity: .55; }
+.balance .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
+.verdict-line { font-family: var(--font-display); font-size: 28px; font-weight: 700; text-transform: uppercase; }
+.verdict-line.even { color: var(--good); }
+.impact { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.impact div { font-size: 14px; color: var(--muted); }
+.impact b { color: var(--ink); }
+.up { color: var(--good); font-weight: 700; } .down { color: var(--bad); font-weight: 700; }
+.note { font-size: 13px; color: var(--muted); }
+.btn { font: inherit; font-weight: 600; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+
+/* Rank cells, shared by the power table and the trade impact */
+.cells { display: flex; gap: 6px; }
+.cell { width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: 16px;
+  font-variant-numeric: tabular-nums; position: relative; }
+.cell.strong { background: var(--good); color: var(--accent-ink); }
+.cell.mid { background: var(--panel-2); color: var(--ink); }
+.cell.weak { background: var(--bad); color: var(--accent-ink); }
+.ti-team .cell.mid { background: var(--panel); }
+.cell .was { position: absolute; bottom: -15px; left: 0; right: 0; text-align: center; font-size: 10px; font-weight: 700; color: var(--muted); }
+.cellhead { display: flex; gap: 6px; }
+.cellhead span { width: 40px; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--muted); }
+
+/* Trade impact */
+.ti { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ti-team { background: var(--panel-2); border-radius: 10px; padding: 12px 14px 22px; display: grid; gap: 10px; }
+.ti-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px; }
+.ti-name { font-weight: 700; }
+.ti-power { font-size: 14px; color: var(--muted); }
+.ti-power b { font-family: var(--font-display); font-size: 22px; color: var(--ink); }
+
+/* Power rankings */
+.page { scroll-margin-top: 80px; }
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; gap: 6px; overflow-x: auto;
+  background: var(--bg); padding-block: 8px; margin-block: -8px; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { font: inherit; font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  white-space: nowrap; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+.tabs button:hover { color: var(--ink); border-color: var(--accent); }
+.tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.power { display: grid; gap: 12px; }
+.ptable { display: grid; }
+.prow { display: grid; grid-template-columns: 40px minmax(0, 1fr) minmax(80px, 180px) auto; gap: 14px; align-items: center;
+  padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.prow:hover { background: var(--panel-2); }
+.prow:last-child { border-bottom: 0; }
+.prow.head { cursor: default; padding-block: 8px; }
+.prow.head:hover { background: none; }
+.prow.head span { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.prank { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--accent); text-align: center; }
+.pteam { font-weight: 700; font-size: 17px; min-width: 0; }
+.pteam small { color: var(--muted); font-weight: 600; margin-left: 6px; }
+.pval { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.pscore { font-family: var(--font-display); font-weight: 700; font-size: 17px; width: 32px; text-align: right; flex: none; }
+.prow.mine .pscore { color: var(--accent); }
+.pbar { flex: 1; height: 8px; border-radius: 4px; background: var(--panel-2); overflow: hidden; }
+.pbar i { display: block; height: 100%; background: var(--accent); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+
+/* Roster comparison */
+.compare { display: grid; gap: 12px; }
+.cmp-pick { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.cmp-pick select { width: auto; flex: 0 1 200px; }
+.cmp-pick .vs { font-family: var(--font-display); font-weight: 700; color: var(--muted); }
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.roster { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; min-width: 0; }
+.roster-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+.roster-title { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.roster-title b { font-family: var(--font-display); font-size: 24px; text-transform: uppercase; }
+.roster-title span { color: var(--muted); font-size: 13px; }
+.totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tot { background: var(--panel-2); border-radius: 8px; padding: 6px 10px; }
+.tot small { display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.tot b { font-size: 18px; }
+.tot .win { color: var(--good); }
+.rgroup { padding: 4px 0; border-bottom: 1px solid var(--line); }
+.rgroup:last-child { border-bottom: 0; }
+.rgroup h3 { margin: 0; padding: 6px 16px 2px; font-size: 11px; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; display: flex; justify-content: space-between; }
+.rp { display: grid; grid-template-columns: minmax(0, 1fr) 46px 60px 30px; gap: 8px; align-items: center; padding: 5px 16px; font-size: 14px; }
+.rp .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp .nm small { color: var(--muted); margin-left: 6px; }
+.rp.bench .nm { color: var(--muted); }
+.rp .vnum { width: auto; }
+.tag-s { font-size: 10px; font-weight: 800; letter-spacing: .5px; color: var(--accent); margin-right: 6px; }
+.mini { height: 5px; border-radius: 3px; background: var(--panel-2); overflow: hidden; }
+.mini i { display: block; height: 100%; background: var(--accent); }
+.rp.bench .mini i { opacity: .45; }
+.add.sm { padding: 1px 7px; }
+
+.deals { display: grid; gap: 8px; }
+.move-note { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.deals h3 { margin: 0; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.deal { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.deal-swap { display: grid; gap: 2px; min-width: 0; }
+.deal-swap div { min-width: 0; }
+.deal-swap b { font-weight: 700; }
+.deal-swap .gets { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; margin-right: 6px; }
+.deal-gain { font-size: 13px; color: var(--muted); grid-column: 1 / -1; }
+.deal-value { font-size: 13px; color: var(--muted); grid-column: 1 / -1; line-height: 1.6; }
+.deal-value b { color: var(--ink); }
+.deal .btn { white-space: nowrap; }
+.deals .empty { background: var(--panel); border: 1px dashed var(--line); border-radius: 12px; padding: 12px 14px; }
+
+
+
+/* Ask */
+.chat { display: grid; gap: 12px; }
+.msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.msg.user { justify-self: end; background: var(--accent); color: var(--accent-ink); border-bottom-right-radius: 4px; }
+.msg.bot { justify-self: start; background: var(--panel); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg.bot p { margin: 0 0 8px; } .msg.bot p:last-child { margin-bottom: 0; }
+.msg.bot ul { margin: 0 0 8px; padding-left: 20px; }
+.msg.thinking { color: var(--muted); font-style: italic; }
+.msg .tool-note { display: block; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.starters { display: flex; flex-wrap: wrap; gap: 8px; }
+.starters button { font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 6px 12px; cursor: pointer; text-align: left; }
+.starters button:hover { border-color: var(--accent); }
+.ask-form { display: grid; gap: 8px; }
+.ask-form textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; width: 100%; }
+.ask-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ask-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled { opacity: .5; cursor: default; }
+
+/* Value board */
+.board { display: grid; gap: 14px; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.filters input { flex: 1 1 220px; width: auto; }
+.filters select { width: auto; flex: 0 1 200px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { font: inherit; font-weight: 700; font-size: 13px; letter-spacing: 1px; border: 0; background: var(--panel); color: var(--muted); padding: 8px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 700;
+  padding: 10px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; position: sticky; top: 0; background: var(--panel); }
+th.r, td.r { text-align: right; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.rank { color: var(--muted); width: 1%; }
+td.player { white-space: normal; min-width: 170px; }
+.pname { font-weight: 700; }
+.meta { color: var(--muted); font-size: 12px; }
+.pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .5px; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; text-transform: uppercase; }
+.pill.buy { background: var(--good-soft); color: var(--good); }
+.pill.sell { background: var(--bad-soft); color: var(--bad); }
+.pill.shop { background: var(--shop-soft); color: var(--shop); }
+.pill.inj { background: var(--bad-soft); color: var(--bad); }
+.vcell { display: flex; align-items: center; gap: 8px; min-width: 140px; }
+.vbar { flex: 1; height: 6px; border-radius: 3px; background: var(--panel-2); overflow: hidden; }
+.vbar i { display: block; height: 100%; background: var(--accent); }
+.vnum { font-weight: 800; width: 38px; text-align: right; }
+.src { color: var(--muted); }
+.owner-fa { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--fa); background: var(--fa-soft); padding: 2px 8px; border-radius: 999px; }
+tr.fa td { background: var(--fa-row); }
+tr.mine td, .prow.mine { background: var(--mine-row); }
+.mine-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 7px; vertical-align: 2px; }
+.myteam { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.myteam select { width: auto; padding: 5px 8px; font-size: 13px; }
+.head-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.eyebrow-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.btn.refresh { font-size: 12px; padding: 4px 10px; }
+.legend { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 14px; height: 14px; border-radius: 4px; background: var(--fa-row); border: 1px solid var(--fa); display: inline-block; }
+.counts { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.chip.fa { border-color: var(--fa); }
+.chip .fa-tag { color: var(--fa); font-weight: 700; }
+.add { font: inherit; font-size: 13px; font-weight: 700; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 3px 9px; cursor: pointer; }
+.add:hover { border-color: var(--accent); color: var(--accent); }
+.count { color: var(--muted); font-size: 13px; }
+footer.how { color: var(--muted); font-size: 13px; max-width: 75ch; display: grid; gap: 6px; }
+
+@media (max-width: 720px) {
+  .sides, .impact, .ti, .cmp { grid-template-columns: 1fr; }
+  .prow { grid-template-columns: 26px minmax(0, 1fr) 34px auto; gap: 8px; }
+  .prow .pbar { display: none; }
+  .prow .pteam small { display: block; margin-left: 0; font-size: 12px; white-space: nowrap; }
+  .pscore { width: auto; font-size: 16px; }
+  .prow.head .bar-h { text-align: right; }
+  .cell { width: 34px; height: 34px; font-size: 14px; } .cellhead span { width: 34px; }
+  .src-col { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .balance .a, .balance .b, .vbar i { transition: width .25s ease; }
+}
+/* Structure: trade page, top moves, collapsible boxes */
+.trade-page { display: grid; gap: 22px; }
+.sub-h { margin: 0 0 10px; font-family: var(--font-display); font-size: 17px; font-weight: 700; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.sub-h .note { font-family: var(--font-body); font-weight: 400; }
+.s-key { color: var(--accent); }
+
+details.more-box, details.how { background: var(--panel); border-radius: 16px; }
+details.more-box > summary, details.how > summary { cursor: pointer; list-style: none; padding: 14px 16px; font-family: var(--font-display); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+details.more-box > summary::-webkit-details-marker, details.how > summary::-webkit-details-marker { display: none; }
+details.more-box > summary::after, details.how > summary::after { content: "▾"; color: var(--muted); }
+details[open].more-box > summary::after, details[open].how > summary::after { content: "▴"; }
+details.more-box[open] { padding-bottom: 14px; }
+details.more-box > :not(summary) { margin: 0 16px 10px; }
+details.how { color: var(--muted); font-size: 13px; }
+details.how > div { padding: 0 16px 12px; max-width: 75ch; }
+.ask-block { display: grid; gap: 10px; }
+
+
+/* Phones: fold the owner under the player's name, shrink the value bar, compact buttons */
+.m-owner { display: none; }
+.t-short { display: none; }
+@media (max-width: 720px) { .t-long { display: none; } .t-short { display: inline; } }
+.m-fa { color: var(--fa); font-weight: 600; }
+@media (max-width: 720px) {
+  .owner-col { display: none; }
+  .m-owner { display: inline; }
+  table { font-size: 14px; }
+  th, td { padding: 9px 5px; }
+  th:first-child, td:first-child { padding-left: 12px; }
+  th:last-child, td:last-child { padding-right: 12px; }
+  td.player { min-width: 0; width: 100%; }
+  .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 48vw; }
+  .vcell { min-width: 0; gap: 6px; }
+  .vbar { flex: none; width: 28px; }
+  .vnum { width: auto; }
+  .add-label { display: none; }
+  /* Tabs share one row evenly (3 public, 4 private), never scrolling sideways */
+  .tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; overflow-x: visible; gap: 6px; }
+  .tabs button { min-width: 0; padding: 9px 4px; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabs button[hidden] { display: none; }
+  .add { padding: 4px 10px; font-size: 16px; line-height: 1; }
+  .filters input { flex-basis: 100%; }
+  .filters select { flex: 1 1 auto; }
+  .seg { width: 100%; }
+  .seg button { flex: 1; padding: 8px 4px; }
+  .calc { padding: 14px; }
+  .roster-head, .rp { padding-left: 12px; padding-right: 12px; }
+  .rp { grid-template-columns: minmax(0, 1fr) 42px 40px 28px; }
+  .totals { gap: 6px; }
+  .tot b { font-size: 16px; }
+  .prow { padding: 10px; gap: 8px; }
+  .pteam { font-size: 16px; }
+  h1 { font-size: 34px; }
+}
+
+/* App-style type: bold geometric headings, sentence case */
+h1, h2 { text-transform: none; letter-spacing: -.5px; font-weight: 800; }
+h1 { font-size: clamp(34px, 6vw, 52px); }
+h2 { font-size: 22px; font-weight: 700; }
+.eyebrow { letter-spacing: 1.5px; font-size: 12px; color: var(--muted); }
+.tabs button { font-family: var(--font-display); text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 600;
+  background: var(--panel); border-color: var(--panel); }
+.tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.calc, .table-wrap, .panel, .roster, .deal, .power summary { border-color: var(--panel); border-radius: 16px; }
+.side, .ti-team { background: var(--panel-2); }
+.verdict-line { text-transform: none; letter-spacing: -.3px; font-size: 24px; font-weight: 800; font-family: var(--font-display); }
+.prank { color: var(--muted); font-size: 22px; }
+.prow.mine .prank { color: var(--accent); }
+.cell { border-radius: 10px; }
+.cell.strong { background: var(--good); color: var(--accent-ink); }
+.cell.weak { background: var(--bad); color: #ffffff; }
+.cell.weak .was, .cell.strong .was { color: var(--muted); }
+.btn { background: var(--panel-2); border-color: var(--panel-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.seg { border-color: var(--panel-2); }
+.seg button { background: var(--panel); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+select, input[type="search"], input[type="text"], .ask-form textarea { background: var(--panel-2); border-color: var(--panel-2); }
+th { background: var(--panel); }
+.owner-fa { color: var(--fa); background: var(--fa-soft); }
+.legend i { border-color: var(--fa); }
+.mine-dot { background: var(--accent); }
+.msg.user { background: var(--accent); color: var(--accent-ink); }
+.msg.bot { background: var(--panel); border-color: var(--panel); }
+/* Position badges, colour-coded like the fantasy apps */
+.posb { display: inline-block; min-width: 30px; padding: 1px 6px; border-radius: 6px; font-family: var(--font-display); font-size: 11px;
+  font-weight: 700; text-align: center; color: var(--accent-ink); margin-right: 6px; vertical-align: 1px; }
+.posb.QB { background: var(--pos-qb); color: #ffffff; } .posb.RB { background: var(--pos-rb); } .posb.WR { background: var(--pos-wr); } .posb.TE { background: var(--pos-te); }
+.cellhead span:nth-child(1) { color: var(--pos-qb); } .cellhead span:nth-child(2) { color: var(--pos-rb); }
+.cellhead span:nth-child(3) { color: var(--pos-wr); } .cellhead span:nth-child(4) { color: var(--pos-te); }
+.rgroup h3 span:first-child { font-family: var(--font-display); }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="head-row">
+      <div class="eyebrow-row"><div class="eyebrow" id="eyebrow">Fat Stack · Week –</div>
+        <button class="btn refresh" type="button" id="refresh" hidden>Refresh rosters</button></div>
+      <label class="myteam" for="myteam"><span class="mine-dot" aria-hidden="true"></span>My team <select id="myteam"></select></label>
+    </div>
+    <h1>Trade <span>Values</span></h1>
+    <p class="lede" id="lede">Rankings, trades and player values for our league.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Pages">
+    
+    <button type="button" role="tab" data-go="power" id="tab-power" aria-controls="power">Rankings</button>
+    <button type="button" role="tab" data-go="trade" id="tab-trade" aria-controls="trade">Trade</button>
+    <button type="button" role="tab" data-go="values" id="tab-values" aria-controls="values">Values</button>
+  </nav>
+
+  <section class="trade-page page" id="trade" role="tabpanel" aria-labelledby="calc-title">
+  <div class="calc">
+    <div class="calc-head">
+      <h2 id="calc-title">Trade</h2>
+      <button class="btn" id="reset" type="button">Clear trade</button>
+    </div>
+    <div class="sides">
+      <div class="side" id="side-a"></div>
+      <div class="side" id="side-b"></div>
+    </div>
+    <div class="verdict" aria-live="polite">
+      <div class="verdict-line" id="verdict">Add players to both sides</div>
+      <div class="balance" aria-hidden="true"><div class="a" id="bal-a"></div><div class="b" id="bal-b"></div><div class="mid"></div></div>
+      <div class="impact" id="impact"></div>
+      <div class="ti" id="ti"></div>
+      <div class="note" id="example-note"></div>
+    </div>
+  </div>
+  <div class="compare">
+    <h3 class="sub-h">Rosters <span class="note">Tap + to add a player to the trade. <b class="s-key">S</b> = starter.</span></h3>
+    <div class="cmp" id="cmp"></div>
+  </div>
+  </section>
+
+  <section class="power page" id="power" role="tabpanel" aria-labelledby="power-title">
+    <h2 id="power-title">Power rankings</h2>
+    <p class="lede">Roster strength, not record. Squares are each position's league rank. Tap a team to trade with them.</p>
+    <div class="panel"><div class="ptable" id="ptable"></div></div>
+  </section>
+
+
+  <section class="board page" id="values" role="tabpanel" aria-labelledby="board-title">
+    <h2 id="board-title">Value board</h2>
+    <div class="filters">
+      <input type="search" id="q" placeholder="Search players" aria-label="Search players">
+      <div class="seg" role="group" aria-label="Position" id="pos-seg"></div>
+      <select id="owner-filter" aria-label="Team"></select>
+    </div>
+    <div class="counts count"><span id="count"></span><span class="legend"><i></i>Free agent, available on waivers</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr id="thead"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+
+  
+  <details class="how">
+    <summary>How this works</summary>
+    <div id="how-values"><b>How values work.</b> Values blend five trade value sources, each scaled so its top player is 100, then averaged.</div>
+    
+    <div><b>Power rankings.</b> Best starting lineup (QB, 2 RB, 3 WR, TE, flex) plus a quarter of the top three bench players. Records don't count. The score puts the top team at 100 and everyone else relative to them.</div>
+    
+    <div><b>How the verdict works.</b> A player is worth what he's worth above the best free agent, since anyone could pick that guy up for nothing. Stars count for more than the same total in smaller pieces (two 30s don't buy a 60), and waiver-level throw-ins count for nothing. Rosters stay the same size: in a 2-for-1 the team getting two players drops its weakest player, and the team getting one picks up the best free agent for the open spot. Both count toward the verdict, lineup changes and ranks.</div>
+  </details>
+</div>
+
+<script id="data" type="application/json">{"week":5,"season":"2026","updated":"10 Oct 2026","league":"1389749738823237632","sources":[],"teams":{"1":"Ben","2":"Pixie","3":"Tom","4":"Jamie","5":"Rump","6":"Alex M","7":"Nick","8":"Kev","9":"Callum","10":"Vella"},"records":{"1":"2-6","2":"5-3","3":"2-6","4":"6-2","5":"5-3","6":"5-3","7":"4-4","8":"5-3","9":"4-4","10":"2-6"},"rosters":{"1":["11566","12512","12519","13287","1466","4046","5045","6786","6904","7021","7525","7553","9224","9500"],"2":["11435","11560","11577","11604","13305","2449","4199","4866","8146","8167","8183","9493","9997"],"3":["10859","11584","11625","11632","12495","13264","13298","2133","3163","3321","7523","7564","8154"],"4":["10213","11624","11834","3198","4217","4983","4984","6790","6806","7547","7588","8131","8228"],"5":["10219","10229","11630","12490","12545","13346","1479","4037","5859","6813","7611","8112","8130"],"6":["11576","11635","12501","12506","13293","4034","6770","6794","7594","8121","8148","8155","9487"],"7":["11564","11586","12481","12507","12518","12533","13279","13414","2216","4881","5872","8137","9488"],"8":["10236","11631","12527","12529","12534","421","5850","6801","7569","8126","8132","9221","9756"],"9":["11610","11637","12489","12514","13330","13337","4035","4943","7526","8144","8151","9484","9509"],"10":["10232","11620","12517","12526","3294","5846","5892","5927","5967","8134","8138","8150","9228"]},"reserve":{"1":[],"2":["Jadarian Price"],"3":["Travis Etienne"],"4":[],"5":["Zach Charbonnet"],"6":["Jordan Mason"],"7":["Jordyn Tyson"],"8":[],"9":["Jalen Coker"],"10":[]},"players":[{"id":"9221","name":"Jahmyr Gibbs","pos":"RB","team":"DET","owner":8,"value":100.0,"injury":null,"form":{"last":15.7,"last_wk":4,"avg":26.2,"gp":4}},{"id":"9509","name":"Bijan Robinson","pos":"RB","team":"ATL","owner":9,"value":96.6,"injury":null,"form":{"last":27.2,"last_wk":4,"avg":24.6,"gp":4}},{"id":"9488","name":"Jaxon Smith-Njigba","pos":"WR","team":"SEA","owner":7,"value":91.5,"injury":null,"form":{"last":10.1,"last_wk":4,"avg":25.2,"gp":4}},{"id":"8151","name":"Kenneth Walker","pos":"RB","team":"KC","owner":9,"value":89.4,"injury":null,"form":{"last":30.4,"last_wk":4,"avg":26.0,"gp":4}},{"id":"9493","name":"Puka Nacua","pos":"WR","team":"LAR","owner":2,"value":81.6,"injury":null,"form":{"last":23.2,"last_wk":4,"avg":16.6,"gp":2}},{"id":"7564","name":"Ja'Marr Chase","pos":"WR","team":"CIN","owner":3,"value":80.1,"injury":null,"form":{"last":4.2,"last_wk":4,"avg":12.4,"gp":4}},{"id":"6813","name":"Jonathan Taylor","pos":"RB","team":"IND","owner":5,"value":79.4,"injury":null,"form":{"last":22.2,"last_wk":4,"avg":20.3,"gp":4}},{"id":"7547","name":"Amon-Ra St. Brown","pos":"WR","team":"DET","owner":4,"value":79.1,"injury":null,"form":{"last":11.5,"last_wk":4,"avg":18.9,"gp":4}},{"id":"6786","name":"CeeDee Lamb","pos":"WR","team":"DAL","owner":1,"value":75.4,"injury":null,"form":{"last":1.9,"last_wk":5,"avg":19.1,"gp":5}},{"id":"8138","name":"James Cook","pos":"RB","team":"BUF","owner":10,"value":74.4,"injury":null,"form":{"last":15.3,"last_wk":4,"avg":15.9,"gp":4}},{"id":"4034","name":"Christian McCaffrey","pos":"RB","team":"SF","owner":6,"value":70.8,"injury":null,"form":{"last":14.5,"last_wk":4,"avg":16.5,"gp":4}},{"id":"8144","name":"Chris Olave","pos":"WR","team":"NO","owner":9,"value":68.3,"injury":null,"form":{"last":15.6,"last_wk":4,"avg":18.1,"gp":4}},{"id":"3198","name":"Derrick Henry","pos":"RB","team":"BAL","owner":4,"value":67.5,"injury":null,"form":{"last":14.9,"last_wk":4,"avg":21.8,"gp":4}},{"id":"12527","name":"Ashton Jeanty","pos":"RB","team":"LV","owner":8,"value":61.9,"injury":null,"form":{"last":15.6,"last_wk":4,"avg":16.1,"gp":4}},{"id":"8150","name":"Kyren Williams","pos":"RB","team":"LAR","owner":10,"value":60.7,"injury":null,"form":{"last":31.7,"last_wk":4,"avg":19.8,"gp":4}},{"id":"9224","name":"Chase Brown","pos":"RB","team":"CIN","owner":1,"value":59.0,"injury":null,"form":{"last":13.6,"last_wk":4,"avg":11.9,"gp":4}},{"id":"7588","name":"Javonte Williams","pos":"RB","team":"DAL","owner":4,"value":57.5,"injury":null,"form":{"last":13.2,"last_wk":5,"avg":17.5,"gp":5}},{"id":"8112","name":"Drake London","pos":"WR","team":"ATL","owner":5,"value":57.2,"injury":null,"form":{"last":12.1,"last_wk":4,"avg":11.8,"gp":4}},{"id":"9997","name":"Zay Flowers","pos":"WR","team":"BAL","owner":2,"value":55.5,"injury":null,"form":{"last":21.8,"last_wk":4,"avg":19.4,"gp":3}},{"id":"11604","name":"Brock Bowers","pos":"TE","team":"LV","owner":2,"value":54.7,"injury":null,"form":{"last":17.6,"last_wk":4,"avg":20.1,"gp":2}},{"id":"7569","name":"Nico Collins","pos":"WR","team":"HOU","owner":8,"value":54.0,"injury":null,"form":{"last":27.3,"last_wk":4,"avg":22.5,"gp":2}},{"id":"6794","name":"Justin Jefferson","pos":"WR","team":"MIN","owner":6,"value":53.9,"injury":null,"form":{"last":4.2,"last_wk":3,"avg":12.8,"gp":3}},{"id":"4984","name":"Josh Allen","pos":"QB","team":"BUF","owner":4,"value":51.2,"injury":null,"form":{"last":19.5,"last_wk":4,"avg":28.7,"gp":4}},{"id":"7594","name":"Chuba Hubbard","pos":"RB","team":"CAR","owner":6,"value":49.0,"injury":null,"form":{"last":25.4,"last_wk":4,"avg":18.5,"gp":4}},{"id":"8130","name":"Trey McBride","pos":"TE","team":"ARI","owner":5,"value":48.8,"injury":null,"form":{"last":6.6,"last_wk":4,"avg":13.2,"gp":4}},{"id":"13287","name":"Jeremiyah Love","pos":"RB","team":"ARI","owner":1,"value":47.7,"injury":null,"form":{"last":6.0,"last_wk":4,"avg":10.8,"gp":4}},{"id":"6790","name":"D'Andre Swift","pos":"RB","team":"CHI","owner":4,"value":47.4,"injury":null,"form":{"last":6.4,"last_wk":4,"avg":14.6,"gp":4}},{"id":"8155","name":"Breece Hall","pos":"RB","team":"NYJ","owner":6,"value":45.3,"injury":"Out","form":{"last":7.0,"last_wk":3,"avg":12.5,"gp":3}},{"id":"12526","name":"Tetairoa McMillan","pos":"WR","team":"CAR","owner":10,"value":44.9,"injury":null,"form":{"last":38.2,"last_wk":4,"avg":15.4,"gp":4}},{"id":"11632","name":"Malik Nabers","pos":"WR","team":"NYG","owner":3,"value":43.6,"injury":null,"form":{"last":20.2,"last_wk":4,"avg":8.9,"gp":4}},{"id":"4866","name":"Saquon Barkley","pos":"RB","team":"PHI","owner":2,"value":43.1,"injury":"Out","form":{"last":1.5,"last_wk":4,"avg":5.2,"gp":4}},{"id":"12490","name":"Bhayshul Tuten","pos":"RB","team":"JAX","owner":5,"value":42.7,"injury":null,"form":{"last":10.1,"last_wk":4,"avg":12.2,"gp":4}},{"id":"8167","name":"Christian Watson","pos":"WR","team":"GB","owner":2,"value":42.2,"injury":null,"form":{"last":6.2,"last_wk":4,"avg":16.8,"gp":4}},{"id":"8146","name":"Garrett Wilson","pos":"WR","team":"NYJ","owner":2,"value":41.2,"injury":null,"form":{"last":4.2,"last_wk":4,"avg":12.8,"gp":4}},{"id":"9487","name":"Parker Washington","pos":"WR","team":"JAX","owner":6,"value":41.2,"injury":null,"form":{"last":1.5,"last_wk":4,"avg":10.8,"gp":4}},{"id":"6801","name":"Tee Higgins","pos":"WR","team":"CIN","owner":8,"value":41.0,"injury":null,"form":{"last":21.2,"last_wk":4,"avg":14.7,"gp":4}},{"id":"8137","name":"George Pickens","pos":"WR","team":"DAL","owner":7,"value":40.9,"injury":null,"form":{"last":23.5,"last_wk":5,"avg":11.0,"gp":5}},{"id":"8228","name":"Jaylen Warren","pos":"RB","team":"PIT","owner":4,"value":39.5,"injury":null,"form":{"last":14.1,"last_wk":4,"avg":12.4,"gp":4}},{"id":"11584","name":"Bucky Irving","pos":"RB","team":"TB","owner":3,"value":38.3,"injury":null,"form":{"last":30.5,"last_wk":5,"avg":14.2,"gp":5}},{"id":"2133","name":"Davante Adams","pos":"WR","team":"LAR","owner":3,"value":37.6,"injury":null,"form":{"last":5.2,"last_wk":4,"avg":15.5,"gp":4}},{"id":"7525","name":"DeVonta Smith","pos":"WR","team":"PHI","owner":1,"value":37.5,"injury":"Out","form":{"last":9.5,"last_wk":3,"avg":13.0,"gp":3}},{"id":"12507","name":"Omarion Hampton","pos":"RB","team":"LAC","owner":7,"value":37.0,"injury":null,"form":{"last":12.3,"last_wk":4,"avg":10.7,"gp":4}},{"id":"8183","name":"Brock Purdy","pos":"QB","team":"SF","owner":2,"value":35.7,"injury":null,"form":{"last":19.6,"last_wk":4,"avg":25.4,"gp":4}},{"id":"10232","name":"Michael Wilson","pos":"WR","team":"ARI","owner":10,"value":35.0,"injury":null,"form":{"last":13.0,"last_wk":4,"avg":11.1,"gp":4}},{"id":"12481","name":"Cam Skattebo","pos":"RB","team":"NYG","owner":7,"value":34.9,"injury":null,"form":{"last":7.1,"last_wk":4,"avg":10.1,"gp":4}},{"id":"7526","name":"Jaylen Waddle","pos":"WR","team":"DEN","owner":9,"value":33.6,"injury":null,"form":{"last":12.0,"last_wk":4,"avg":9.0,"gp":4}},{"id":"5859","name":"A.J. Brown","pos":"WR","team":"NE","owner":5,"value":33.4,"injury":"IR","form":{"last":4.1,"last_wk":1,"avg":4.1,"gp":1}},{"id":"4881","name":"Lamar Jackson","pos":"QB","team":"BAL","owner":7,"value":31.9,"injury":"Out","form":{"last":18.9,"last_wk":4,"avg":20.0,"gp":4}},{"id":"12512","name":"Quinshon Judkins","pos":"RB","team":"CLE","owner":1,"value":31.6,"injury":null,"form":{"last":18.6,"last_wk":4,"avg":10.2,"gp":4}},{"id":"4217","name":"George Kittle","pos":"TE","team":"SF","owner":4,"value":31.6,"injury":null,"form":{"last":15.0,"last_wk":4,"avg":14.1,"gp":4}},{"id":"12501","name":"Matthew Golden","pos":"WR","team":"GB","owner":6,"value":31.5,"injury":null,"form":{"last":10.2,"last_wk":4,"avg":12.2,"gp":4}},{"id":"2216","name":"Mike Evans","pos":"WR","team":"SF","owner":7,"value":31.2,"injury":null,"form":{"last":10.1,"last_wk":4,"avg":10.4,"gp":4}},{"id":"4983","name":"DJ Moore","pos":"WR","team":"BUF","owner":4,"value":30.7,"injury":null,"form":{"last":2.2,"last_wk":4,"avg":7.6,"gp":4}},{"id":"10229","name":"Rashee Rice","pos":"WR","team":"KC","owner":5,"value":30.4,"injury":null,"form":{"last":0,"last_wk":4,"avg":7.9,"gp":4}},{"id":"12519","name":"Luther Burden","pos":"WR","team":"CHI","owner":1,"value":27.9,"injury":null,"form":{"last":9.4,"last_wk":4,"avg":9.3,"gp":4}},{"id":"4199","name":"Aaron Jones","pos":"RB","team":"MIN","owner":2,"value":27.3,"injury":null,"form":{"last":14.8,"last_wk":4,"avg":11.8,"gp":4}},{"id":"5892","name":"David Montgomery","pos":"RB","team":"HOU","owner":10,"value":27.2,"injury":null,"form":{"last":4.3,"last_wk":4,"avg":10.2,"gp":4}},{"id":"10859","name":"Sam LaPorta","pos":"TE","team":"DET","owner":3,"value":25.7,"injury":null,"form":{"last":18.4,"last_wk":4,"avg":11.4,"gp":4}},{"id":"13279","name":"Carnell Tate","pos":"WR","team":"TEN","owner":7,"value":25.4,"injury":null,"form":{"last":17.0,"last_wk":4,"avg":8.9,"gp":4}},{"id":"11646","name":"Jalen Coker","pos":"WR","team":"CAR","owner":9,"value":25.3,"injury":"Out","form":{"last":2.8,"last_wk":3,"avg":14.4,"gp":3}},{"id":"12534","name":"Kyle Monangai","pos":"RB","team":"CHI","owner":8,"value":25.3,"injury":"Out","form":{"last":27.5,"last_wk":4,"avg":14.2,"gp":4}},{"id":"6770","name":"Joe Burrow","pos":"QB","team":"CIN","owner":6,"value":25.2,"injury":null,"form":{"last":25.7,"last_wk":4,"avg":19.9,"gp":4}},{"id":"4046","name":"Patrick Mahomes","pos":"QB","team":"KC","owner":1,"value":25.2,"injury":null,"form":{"last":17.0,"last_wk":4,"avg":21.4,"gp":4}},{"id":"12518","name":"Tyler Warren","pos":"TE","team":"IND","owner":7,"value":24.7,"injury":null,"form":{"last":6.6,"last_wk":4,"avg":9.2,"gp":4}},{"id":"11635","name":"Ladd McConkey","pos":"WR","team":"LAC","owner":6,"value":24.3,"injury":null,"form":{"last":0,"last_wk":4,"avg":7.6,"gp":4}},{"id":"7611","name":"Rhamondre Stevenson","pos":"RB","team":"NE","owner":5,"value":24.2,"injury":null,"form":{"last":16.9,"last_wk":4,"avg":9.3,"gp":4}},{"id":"8148","name":"Jameson Williams","pos":"WR","team":"DET","owner":6,"value":23.7,"injury":null,"form":{"last":13.2,"last_wk":4,"avg":7.7,"gp":4}},{"id":"7523","name":"Trevor Lawrence","pos":"QB","team":"JAX","owner":3,"value":23.6,"injury":null,"form":{"last":13.1,"last_wk":4,"avg":16.8,"gp":4}},{"id":"7543","name":"Travis Etienne","pos":"RB","team":"NO","owner":3,"value":23.4,"injury":"IR","form":{"last":8.0,"last_wk":3,"avg":8.5,"gp":3}},{"id":"5927","name":"Terry McLaurin","pos":"WR","team":"WAS","owner":10,"value":23.1,"injury":null,"form":{"last":16.7,"last_wk":3,"avg":8.4,"gp":3}},{"id":"12529","name":"TreVeyon Henderson","pos":"RB","team":"NE","owner":8,"value":23.0,"injury":null,"form":{"last":4.2,"last_wk":4,"avg":7.1,"gp":3}},{"id":"12514","name":"Emeka Egbuka","pos":"WR","team":"TB","owner":9,"value":21.9,"injury":null,"form":{"last":14.2,"last_wk":5,"avg":8.6,"gp":5}},{"id":"5846","name":"DK Metcalf","pos":"WR","team":"PIT","owner":10,"value":21.6,"injury":null,"form":{"last":14.0,"last_wk":4,"avg":8.8,"gp":4}},{"id":"3294","name":"Dak Prescott","pos":"QB","team":"DAL","owner":10,"value":21.3,"injury":null,"form":{"last":14.6,"last_wk":5,"avg":19.4,"gp":5}},{"id":"9500","name":"Josh Downs","pos":"WR","team":"IND","owner":1,"value":20.3,"injury":null,"form":{"last":3.1,"last_wk":4,"avg":7.2,"gp":4}},{"id":"5872","name":"Deebo Samuel","pos":"WR","team":"SF","owner":7,"value":20.2,"injury":null,"form":{"last":15.5,"last_wk":4,"avg":12.7,"gp":4}},{"id":"5967","name":"Tony Pollard","pos":"RB","team":"TEN","owner":10,"value":20.1,"injury":null,"form":{"last":12.0,"last_wk":4,"avg":8.6,"gp":4}},{"id":"12489","name":"RJ Harvey","pos":"RB","team":"DEN","owner":9,"value":20.0,"injury":null,"form":{"last":14.3,"last_wk":4,"avg":9.4,"gp":3}},{"id":"9484","name":"Tucker Kraft","pos":"TE","team":"GB","owner":9,"value":19.5,"injury":null,"form":{"last":13.5,"last_wk":4,"avg":7.2,"gp":4}},{"id":"11620","name":"Rome Odunze","pos":"WR","team":"CHI","owner":10,"value":19.5,"injury":null,"form":{"last":12.4,"last_wk":4,"avg":7.6,"gp":4}},{"id":"1466","name":"Travis Kelce","pos":"TE","team":"KC","owner":1,"value":17.5,"injury":null,"form":{"last":2.5,"last_wk":4,"avg":11.2,"gp":4}},{"id":"10236","name":"Dalton Kincaid","pos":"TE","team":"BUF","owner":8,"value":17.3,"injury":null,"form":{"last":1.2,"last_wk":4,"avg":9.6,"gp":4}},{"id":"2449","name":"Stefon Diggs","pos":"WR","team":"WAS","owner":2,"value":17.1,"injury":"Out","form":{"last":6.0,"last_wk":4,"avg":11.0,"gp":4}},{"id":"11560","name":"Caleb Williams","pos":"QB","team":"CHI","owner":2,"value":16.9,"injury":null,"form":{"last":8.7,"last_wk":2,"avg":23.0,"gp":2}},{"id":"12545","name":"Tyler Shough","pos":"QB","team":"NO","owner":5,"value":16.9,"injury":null,"form":{"last":15.9,"last_wk":4,"avg":22.1,"gp":4}},{"id":"13346","name":"Denzel Boston","pos":"WR","team":"CLE","owner":5,"value":16.7,"injury":null,"form":{"last":10.9,"last_wk":4,"avg":12.2,"gp":4}},{"id":"11586","name":"Blake Corum","pos":"RB","team":"LAR","owner":7,"value":15.9,"injury":null,"form":{"last":2.6,"last_wk":4,"avg":5.0,"gp":4}},{"id":"6904","name":"Jalen Hurts","pos":"QB","team":"PHI","owner":1,"value":15.8,"injury":null,"form":{"last":13.5,"last_wk":4,"avg":17.5,"gp":4}},{"id":"12517","name":"Colston Loveland","pos":"TE","team":"CHI","owner":10,"value":15.7,"injury":null,"form":{"last":8.7,"last_wk":4,"avg":3.6,"gp":4}},{"id":"3163","name":"Jared Goff","pos":"QB","team":"DET","owner":3,"value":15.7,"injury":null,"form":{"last":20.5,"last_wk":4,"avg":21.5,"gp":4}},{"id":"11564","name":"Drake Maye","pos":"QB","team":"NE","owner":7,"value":15.5,"injury":null,"form":{"last":27.2,"last_wk":4,"avg":13.7,"gp":4}},{"id":"5850","name":"Josh Jacobs","pos":"RB","team":"GB","owner":8,"value":15.3,"injury":"NA","form":null},{"id":"12506","name":"Harold Fannin","pos":"TE","team":"CLE","owner":6,"value":14.9,"injury":null,"form":{"last":10.2,"last_wk":4,"avg":10.5,"gp":4}},{"id":"8121","name":"Romeo Doubs","pos":"WR","team":"NE","owner":6,"value":14.8,"injury":null,"form":{"last":20.8,"last_wk":4,"avg":9.6,"gp":4}},{"id":"12495","name":"Ollie Gordon","pos":"RB","team":"MIA","owner":3,"value":14.6,"injury":null,"form":{"last":17.0,"last_wk":4,"avg":7.7,"gp":4}},{"id":"4035","name":"Alvin Kamara","pos":"RB","team":"NO","owner":9,"value":14.5,"injury":null,"form":{"last":20.3,"last_wk":4,"avg":9.9,"gp":3}},{"id":"13298","name":"KC Concepcion","pos":"WR","team":"CLE","owner":3,"value":14.2,"injury":null,"form":{"last":8.9,"last_wk":4,"avg":5.5,"gp":4}},{"id":"9228","name":"Bryce Young","pos":"QB","team":"CAR","owner":10,"value":14.0,"injury":null,"form":{"last":21.5,"last_wk":4,"avg":23.2,"gp":4}},{"id":"8408","name":"Jordan Mason","pos":"RB","team":"MIN","owner":6,"value":13.9,"injury":"IR","form":{"last":11.9,"last_wk":1,"avg":11.9,"gp":1}},{"id":"12533","name":"Jacory Croskey-Merritt","pos":"RB","team":"WAS","owner":7,"value":13.8,"injury":null,"form":{"last":6.0,"last_wk":4,"avg":7.0,"gp":4}},{"id":"7002","name":"Juwan Johnson","pos":"TE","team":"NO","owner":null,"value":13.5,"injury":null,"form":{"last":8.9,"last_wk":4,"avg":12.4,"gp":4}},{"id":"13286","name":"Jadarian Price","pos":"RB","team":"SEA","owner":2,"value":13.4,"injury":"IR","form":{"last":0.7,"last_wk":3,"avg":4.0,"gp":3}},{"id":"9756","name":"Jordan Addison","pos":"WR","team":"MIN","owner":8,"value":12.6,"injury":null,"form":{"last":7.1,"last_wk":4,"avg":6.9,"gp":4}},{"id":"11834","name":"Devaughn Vele","pos":"WR","team":"NO","owner":4,"value":12.0,"injury":null,"form":{"last":14.4,"last_wk":4,"avg":11.3,"gp":4}},{"id":"5045","name":"Courtland Sutton","pos":"WR","team":"DEN","owner":1,"value":12.0,"injury":null,"form":{"last":0.9,"last_wk":4,"avg":3.3,"gp":4}},{"id":"13281","name":"Jordyn Tyson","pos":"WR","team":"NO","owner":7,"value":11.9,"injury":"IR","form":null},{"id":"11628","name":"Marvin Harrison","pos":"WR","team":"ARI","owner":null,"value":11.8,"injury":"Out","form":{"last":7.7,"last_wk":4,"avg":4.2,"gp":4}},{"id":"8131","name":"Isaiah Likely","pos":"TE","team":"NYG","owner":4,"value":11.7,"injury":null,"form":{"last":10.1,"last_wk":4,"avg":10.5,"gp":4}},{"id":"11566","name":"Jayden Daniels","pos":"QB","team":"WAS","owner":1,"value":11.3,"injury":null,"form":{"last":14.7,"last_wk":2,"avg":16.2,"gp":2}},{"id":"5947","name":"Jakobi Meyers","pos":"WR","team":"JAX","owner":null,"value":11.2,"injury":null,"form":{"last":4.8,"last_wk":4,"avg":8.8,"gp":4}},{"id":"6806","name":"J.K. Dobbins","pos":"RB","team":"DEN","owner":4,"value":10.8,"injury":null,"form":{"last":6.2,"last_wk":4,"avg":4.8,"gp":4}},{"id":"13305","name":"Mike Washington","pos":"RB","team":"LV","owner":2,"value":10.6,"injury":null,"form":{"last":2.2,"last_wk":4,"avg":4.6,"gp":4}},{"id":"421","name":"Matthew Stafford","pos":"QB","team":"LAR","owner":8,"value":10.5,"injury":null,"form":{"last":11.7,"last_wk":4,"avg":16.9,"gp":4}},{"id":"11624","name":"Xavier Worthy","pos":"WR","team":"KC","owner":4,"value":10.2,"injury":null,"form":{"last":9.0,"last_wk":4,"avg":6.6,"gp":4}},{"id":"11435","name":"Emanuel Wilson","pos":"RB","team":"SEA","owner":2,"value":10.2,"injury":null,"form":{"last":25.5,"last_wk":4,"avg":9.1,"gp":4}},{"id":"8126","name":"Wan'Dale Robinson","pos":"WR","team":"TEN","owner":8,"value":10.1,"injury":null,"form":{"last":9.5,"last_wk":4,"avg":8.1,"gp":4}},{"id":"11637","name":"Keon Coleman","pos":"WR","team":"BUF","owner":9,"value":10.0,"injury":null,"form":{"last":20.6,"last_wk":4,"avg":8.7,"gp":4}},{"id":"12474","name":"Woody Marks","pos":"RB","team":"HOU","owner":null,"value":9.6,"injury":null,"form":{"last":8.2,"last_wk":4,"avg":6.8,"gp":4}},{"id":"6804","name":"Jordan Love","pos":"QB","team":"GB","owner":null,"value":9.5,"injury":null,"form":{"last":14.1,"last_wk":4,"avg":17.0,"gp":4}},{"id":"9753","name":"Zach Charbonnet","pos":"RB","team":"SEA","owner":5,"value":9.2,"injury":"PUP","form":null},{"id":"4037","name":"Chris Godwin","pos":"WR","team":"TB","owner":5,"value":9.1,"injury":null,"form":{"last":5.5,"last_wk":5,"avg":5.8,"gp":5}},{"id":"5022","name":"Dallas Goedert","pos":"TE","team":"PHI","owner":null,"value":9.0,"injury":null,"form":{"last":0.9,"last_wk":2,"avg":11.3,"gp":2}},{"id":"5844","name":"T.J. Hockenson","pos":"TE","team":"MIN","owner":null,"value":8.8,"injury":null,"form":{"last":18.4,"last_wk":4,"avg":9.1,"gp":4}},{"id":"13337","name":"Emmett Johnson","pos":"RB","team":"KC","owner":9,"value":8.8,"injury":null,"form":{"last":1.5,"last_wk":4,"avg":3.9,"gp":4}},{"id":"7021","name":"Rico Dowdle","pos":"RB","team":"PIT","owner":1,"value":8.6,"injury":null,"form":{"last":5.4,"last_wk":2,"avg":4.2,"gp":2}},{"id":"13294","name":"Makai Lemon","pos":"WR","team":"PHI","owner":null,"value":8.5,"injury":null,"form":{"last":4.2,"last_wk":4,"avg":2.8,"gp":4}},{"id":"9486","name":"Dontayvion Wicks","pos":"WR","team":"PHI","owner":null,"value":8.3,"injury":null,"form":{"last":3.3,"last_wk":4,"avg":7.9,"gp":4}},{"id":"8154","name":"Brian Robinson","pos":"RB","team":"ATL","owner":3,"value":8.1,"injury":null,"form":{"last":25.2,"last_wk":4,"avg":11.8,"gp":4}},{"id":"11576","name":"Braelon Allen","pos":"RB","team":"NYJ","owner":6,"value":8.0,"injury":null,"form":{"last":7.7,"last_wk":4,"avg":5.7,"gp":4}},{"id":"5012","name":"Mark Andrews","pos":"TE","team":"BAL","owner":null,"value":7.8,"injury":null,"form":{"last":11.2,"last_wk":4,"avg":7.5,"gp":4}},{"id":"13414","name":"Kaelon Black","pos":"RB","team":"SF","owner":7,"value":7.7,"injury":null,"form":{"last":1.3,"last_wk":4,"avg":3.2,"gp":4}},{"id":"11631","name":"Brian Thomas","pos":"WR","team":"JAX","owner":8,"value":7.7,"injury":null,"form":{"last":8.7,"last_wk":4,"avg":5.2,"gp":4}},{"id":"8132","name":"Tyler Allgeier","pos":"RB","team":"ARI","owner":8,"value":7.5,"injury":null,"form":{"last":11.9,"last_wk":4,"avg":6.4,"gp":4}},{"id":"11625","name":"Adonai Mitchell","pos":"WR","team":"NYJ","owner":3,"value":7.4,"injury":"Out","form":{"last":9.3,"last_wk":2,"avg":8.4,"gp":2}},{"id":"8134","name":"Khalil Shakir","pos":"WR","team":"BUF","owner":10,"value":7.4,"injury":null,"form":{"last":9.7,"last_wk":4,"avg":5.8,"gp":4}},{"id":"13345","name":"Jonah Coleman","pos":"RB","team":"DEN","owner":null,"value":7.4,"injury":"IR","form":{"last":13.3,"last_wk":2,"avg":6.7,"gp":2}},{"id":"11630","name":"Roman Wilson","pos":"WR","team":"PIT","owner":5,"value":7.3,"injury":null,"form":{"last":14.9,"last_wk":4,"avg":9.4,"gp":4}},{"id":"8136","name":"Rachaad White","pos":"RB","team":"WAS","owner":null,"value":7.3,"injury":null,"form":{"last":10.6,"last_wk":3,"avg":8.5,"gp":3}},{"id":"13330","name":"Kenyon Sadiq","pos":"TE","team":"NYJ","owner":9,"value":6.9,"injury":null,"form":{"last":0,"last_wk":4,"avg":8.2,"gp":4}},{"id":"11610","name":"Malik Washington","pos":"WR","team":"MIA","owner":9,"value":6.9,"injury":null,"form":{"last":9.5,"last_wk":4,"avg":7.4,"gp":4}},{"id":"11577","name":"Will Shipley","pos":"RB","team":"PHI","owner":2,"value":6.9,"injury":null,"form":{"last":2.3,"last_wk":4,"avg":2.4,"gp":4}},{"id":"9511","name":"Keaton Mitchell","pos":"RB","team":"LAC","owner":null,"value":6.8,"injury":null,"form":{"last":8.8,"last_wk":4,"avg":6.6,"gp":4}},{"id":"1166","name":"Kirk Cousins","pos":"QB","team":"LV","owner":null,"value":6.7,"injury":null,"form":{"last":23.6,"last_wk":4,"avg":20.7,"gp":4}},{"id":"7553","name":"Kyle Pitts","pos":"TE","team":"ATL","owner":1,"value":6.4,"injury":null,"form":{"last":6.2,"last_wk":4,"avg":2.3,"gp":4}},{"id":"12492","name":"Pat Bryant","pos":"WR","team":"DEN","owner":null,"value":6.4,"injury":"IR","form":{"last":6.2,"last_wk":4,"avg":6.9,"gp":4}},{"id":"9754","name":"Quentin Johnston","pos":"WR","team":"LAC","owner":null,"value":6.4,"injury":"Out","form":{"last":4.5,"last_wk":4,"avg":3.6,"gp":4}},{"id":"6797","name":"Justin Herbert","pos":"QB","team":"LAC","owner":null,"value":6.2,"injury":null,"form":{"last":11.6,"last_wk":4,"avg":12.4,"gp":4}},{"id":"8110","name":"Jake Ferguson","pos":"TE","team":"DAL","owner":null,"value":5.6,"injury":null,"form":{"last":3.4,"last_wk":5,"avg":6.7,"gp":5}},{"id":"9758","name":"C.J. Stroud","pos":"QB","team":"HOU","owner":null,"value":5.6,"injury":null,"form":{"last":23.1,"last_wk":4,"avg":17.1,"gp":4}},{"id":"11563","name":"Bo Nix","pos":"QB","team":"DEN","owner":null,"value":5.5,"injury":null,"form":{"last":13.6,"last_wk":4,"avg":15.1,"gp":4}},{"id":"8142","name":"Alec Pierce","pos":"WR","team":"IND","owner":null,"value":5.1,"injury":"IR","form":{"last":1.6,"last_wk":2,"avg":4.8,"gp":2}},{"id":"2505","name":"Darren Waller","pos":"TE","team":"CAR","owner":null,"value":4.9,"injury":null,"form":{"last":5.1,"last_wk":4,"avg":8.3,"gp":4}},{"id":"1479","name":"Keenan Allen","pos":"WR","team":"IND","owner":5,"value":4.6,"injury":null,"form":{"last":15.3,"last_wk":3,"avg":7.5,"gp":3}},{"id":"12509","name":"Tre' Harris","pos":"WR","team":"LAC","owner":null,"value":4.5,"injury":null,"form":{"last":7.5,"last_wk":4,"avg":6.8,"gp":4}},{"id":"9480","name":"Brenton Strange","pos":"TE","team":"JAX","owner":null,"value":4.5,"injury":null,"form":{"last":13.0,"last_wk":4,"avg":7.4,"gp":4}},{"id":"7571","name":"Rashod Bateman","pos":"WR","team":"BAL","owner":null,"value":4.4,"injury":null,"form":{"last":5.6,"last_wk":4,"avg":7.2,"gp":4}},{"id":"4993","name":"Mike Gesicki","pos":"TE","team":"CIN","owner":null,"value":4.4,"injury":null,"form":{"last":11.5,"last_wk":4,"avg":9.8,"gp":4}},{"id":"3634","name":"Kalif Raymond","pos":"WR","team":"CHI","owner":null,"value":4.4,"injury":null,"form":{"last":1.6,"last_wk":4,"avg":9.6,"gp":4}},{"id":"5001","name":"Dalton Schultz","pos":"TE","team":"HOU","owner":null,"value":4.3,"injury":null,"form":{"last":1.9,"last_wk":4,"avg":8.0,"gp":4}},{"id":"3257","name":"Jacoby Brissett","pos":"QB","team":"ARI","owner":null,"value":4.3,"injury":null,"form":{"last":13.4,"last_wk":4,"avg":15.8,"gp":4}},{"id":"11581","name":"MarShawn Lloyd","pos":"RB","team":"GB","owner":null,"value":4.1,"injury":null,"form":{"last":7.4,"last_wk":4,"avg":5.4,"gp":4}},{"id":"12536","name":"Jaylin Noel","pos":"WR","team":"HOU","owner":null,"value":4.0,"injury":null,"form":{"last":10.4,"last_wk":4,"avg":6.3,"gp":4}},{"id":"13301","name":"Antonio Williams","pos":"WR","team":"WAS","owner":null,"value":3.8,"injury":null,"form":{"last":3.6,"last_wk":4,"avg":6.1,"gp":4}},{"id":"12487","name":"Terrance Ferguson","pos":"TE","team":"LAR","owner":null,"value":3.8,"injury":"IR","form":{"last":1.4,"last_wk":3,"avg":5.3,"gp":3}},{"id":"3321","name":"Tyreek Hill","pos":"WR","team":"FA","owner":3,"value":3.8,"injury":null,"form":null},{"id":"10213","name":"Tre Tucker","pos":"WR","team":"LV","owner":4,"value":3.7,"injury":null,"form":{"last":6.4,"last_wk":4,"avg":9.2,"gp":4}},{"id":"13296","name":"Caleb Douglas","pos":"WR","team":"MIA","owner":null,"value":3.6,"injury":"Out","form":{"last":2.9,"last_wk":2,"avg":7.4,"gp":2}},{"id":"4943","name":"Sam Darnold","pos":"QB","team":"SEA","owner":9,"value":3.6,"injury":null,"form":{"last":14.3,"last_wk":4,"avg":14.8,"gp":3}},{"id":"6819","name":"Michael Pittman","pos":"WR","team":"PIT","owner":null,"value":3.4,"injury":"IR","form":{"last":2.5,"last_wk":4,"avg":4.1,"gp":3}},{"id":"9504","name":"Kayshon Boutte","pos":"WR","team":"HOU","owner":null,"value":3.3,"injury":null,"form":{"last":5.1,"last_wk":4,"avg":4.0,"gp":4}},{"id":"8676","name":"Rashid Shaheed","pos":"WR","team":"SEA","owner":null,"value":3.3,"injury":null,"form":{"last":11.8,"last_wk":4,"avg":5.1,"gp":4}},{"id":"10219","name":"Chris Rodriguez","pos":"RB","team":"JAX","owner":5,"value":3.2,"injury":null,"form":{"last":9.5,"last_wk":4,"avg":5.7,"gp":4}},{"id":"13285","name":"Malachi Fields","pos":"WR","team":"NYG","owner":null,"value":3.1,"injury":null,"form":{"last":12.2,"last_wk":4,"avg":5.6,"gp":4}},{"id":"3214","name":"Hunter Henry","pos":"TE","team":"NE","owner":null,"value":3.0,"injury":null,"form":{"last":8.7,"last_wk":4,"avg":4.8,"gp":4}},{"id":"5849","name":"Kyler Murray","pos":"QB","team":"MIN","owner":null,"value":3.0,"injury":null,"form":{"last":11.5,"last_wk":4,"avg":7.8,"gp":3}},{"id":"4017","name":"Deshaun Watson","pos":"QB","team":"CLE","owner":null,"value":2.7,"injury":null,"form":{"last":13.9,"last_wk":4,"avg":17.2,"gp":4}},{"id":"13311","name":"Chris Bell","pos":"WR","team":"MIA","owner":null,"value":2.6,"injury":null,"form":{"last":0,"last_wk":4,"avg":2.9,"gp":4}},{"id":"4177","name":"Mack Hollins","pos":"WR","team":"NE","owner":null,"value":2.5,"injury":"IR","form":{"last":6.8,"last_wk":4,"avg":7.1,"gp":4}},{"id":"7567","name":"Kenny Gainwell","pos":"RB","team":"TB","owner":null,"value":2.4,"injury":null,"form":{"last":4.3,"last_wk":5,"avg":4.3,"gp":5}},{"id":"2306","name":"Jameis Winston","pos":"QB","team":"NYG","owner":null,"value":1.6,"injury":null,"form":{"last":20.0,"last_wk":4,"avg":9.9,"gp":3}},{"id":"13417","name":"De'Zhaun Stribling","pos":"WR","team":"SF","owner":null,"value":1.5,"injury":"IR","form":{"last":0,"last_wk":1,"avg":0.0,"gp":1}},{"id":"13264","name":"Dohnte Meyers","pos":"WR","team":"CIN","owner":3,"value":1.5,"injury":null,"form":{"last":11.7,"last_wk":4,"avg":4.8,"gp":4}},{"id":"11783","name":"Ryan Flournoy","pos":"WR","team":"DAL","owner":null,"value":1.5,"injury":null,"form":{"last":10.5,"last_wk":5,"avg":5.5,"gp":5}},{"id":"9508","name":"Tyjae Spears","pos":"RB","team":"TEN","owner":null,"value":1.5,"injury":null,"form":{"last":1.1,"last_wk":4,"avg":3.2,"gp":4}},{"id":"11559","name":"Michael Penix","pos":"QB","team":"ATL","owner":null,"value":1.5,"injury":null,"form":{"last":12.7,"last_wk":4,"avg":13.9,"gp":2}},{"id":"96","name":"Aaron Rodgers","pos":"QB","team":"PIT","owner":null,"value":1.4,"injury":null,"form":{"last":24.0,"last_wk":4,"avg":16.3,"gp":4}},{"id":"9482","name":"Michael Mayer","pos":"TE","team":"LV","owner":null,"value":1.4,"injury":null,"form":{"last":12.2,"last_wk":4,"avg":8.2,"gp":4}},{"id":"4892","name":"Baker Mayfield","pos":"QB","team":"TB","owner":null,"value":1.3,"injury":"Out","form":{"last":12.3,"last_wk":3,"avg":12.4,"gp":3}},{"id":"5870","name":"Daniel Jones","pos":"QB","team":"IND","owner":null,"value":1.3,"injury":null,"form":{"last":8.9,"last_wk":4,"avg":10.1,"gp":4}},{"id":"12522","name":"Cam Ward","pos":"QB","team":"TEN","owner":null,"value":1.3,"injury":null,"form":{"last":16.6,"last_wk":4,"avg":14.7,"gp":4}},{"id":"8161","name":"Malik Willis","pos":"QB","team":"MIA","owner":null,"value":1.3,"injury":null,"form":{"last":2.5,"last_wk":4,"avg":10.9,"gp":4}},{"id":"11643","name":"Jaylen Wright","pos":"RB","team":"MIA","owner":null,"value":1.2,"injury":null,"form":{"last":0.7,"last_wk":4,"avg":0.6,"gp":3}},{"id":"9502","name":"Tank Dell","pos":"WR","team":"HOU","owner":null,"value":1.2,"injury":"IR","form":null},{"id":"9757","name":"Kendre Miller","pos":"RB","team":"NO","owner":null,"value":1.1,"injury":null,"form":{"last":0.9,"last_wk":4,"avg":4.3,"gp":3}},{"id":"1373","name":"Geno Smith","pos":"QB","team":"NYJ","owner":null,"value":1.0,"injury":null,"form":{"last":8.8,"last_wk":4,"avg":14.9,"gp":4}},{"id":"13293","name":"Ja'Kobi Lane","pos":"WR","team":"BAL","owner":6,"value":0.2,"injury":"IR","form":{"last":1.6,"last_wk":1,"avg":1.6,"gp":1}}],"example":null,"public":true}</script>
+<script>
+(async function () {
+  const D = JSON.parse(document.getElementById("data").textContent);
+  const byId = Object.fromEntries(D.players.map(p => [p.id, p]));
+
+  // Live rosters: when the page is hosted somewhere that can reach Sleeper, pull current rosters and records
+  // on open, so trades and waiver moves show up straight away. Values still come from the nightly build.
+  // Inside a Claude artifact the request is blocked, and the page keeps the rosters it was built with.
+  let rostersLive = false;
+  try {
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 4000);
+    const res = await fetch(`https://api.sleeper.app/v1/league/${D.league}/rosters`, { signal: ctl.signal });
+    clearTimeout(timer);
+    const live = res.ok ? await res.json() : null;
+    if (D.league && Array.isArray(live) && live.length) {
+      D.players.forEach(p => { p.owner = null; });
+      live.forEach(r => {
+        const ir = r.reserve || [];
+        const ids = (r.players || []).filter(id => byId[id] && !ir.includes(id));  // IR-slot players don't use a roster spot
+        D.rosters[r.roster_id] = ids;
+        ids.concat(ir.filter(id => byId[id])).forEach(id => { byId[id].owner = r.roster_id; });
+        D.reserve[r.roster_id] = ir.map(id => byId[id] ? byId[id].name : id);
+        if (r.settings) D.records[r.roster_id] = `${r.settings.wins}-${r.settings.losses}`;
+      });
+      // The example trade only makes sense if those players are still on those teams
+      const ex = D.example;
+      if (ex && !(ex.a.every(id => byId[id] && byId[id].owner === ex.teamA) && ex.b.every(id => byId[id] && byId[id].owner === ex.teamB))) D.example = null;
+      rostersLive = true;
+    }
+  } catch (e) { /* offline, blocked or slow: keep the built rosters */ }
+  const teamName = rid => D.teams[rid] || "";
+  const SRC_LABEL = {};
+  const SLOTS = { QB: 1, RB: 2, WR: 3, TE: 1 }, FLEX = ["RB", "WR", "TE"];
+  const POWER = 1.0;  // star premium (off) in the verdict (STAR_POWER in trade.py)
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const fmt = v => (Math.round(v * 10) / 10).toFixed(1);
+  const posBadge = (pos, label) => `<span class="posb ${pos}">${label || pos}</span>`;
+
+  // Highlight one team's players. Defaults to Pixie; each viewer can pick their own (remembered in this browser).
+  // The public site starts with no team picked, so each visitor chooses their own
+  const pixie = D.public ? "" : (Object.keys(D.teams).find(rid => D.teams[rid] === "Pixie") || "");
+  let mine = pixie;
+  try { const saved = localStorage.getItem("ft-my-team"); if (saved !== null && (saved === "" || D.teams[saved])) mine = saved; } catch (e) {}
+  const myTeamSel = document.getElementById("myteam");
+  myTeamSel.innerHTML = '<option value="">None</option>' + Object.entries(D.teams).sort((x, y) => x[1].localeCompare(y[1]))
+    .map(([rid, n]) => `<option value="${rid}"${rid === mine ? " selected" : ""}>${esc(n)}</option>`).join("");
+  myTeamSel.addEventListener("change", e => {
+    mine = e.target.value;
+    try { localStorage.setItem("ft-my-team", mine); } catch (err) {}
+    renderPower(); renderBoard();
+    if (mine && !sides.a.ids.length && !sides.b.ids.length) {
+      sides.a.team = String(mine);
+      if (!sides.b.team || sides.b.team === sides.a.team) sides.b.team = order.find(t => t !== String(mine)) || "";
+    }
+    render();
+  });
+  const isMine = p => mine && String(p.owner) === mine;
+
+  const now = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  document.getElementById("eyebrow").textContent =
+    `Fat Stack · Week ${D.week} · Values ${D.updated} · ${rostersLive ? "Rosters live, updated " + now : "Rosters as of " + D.updated}`;
+  // Re-pull rosters: rosters load fresh on every open, so a reload (keeping the current tab) is a full refresh
+  const refreshBtn = document.getElementById("refresh");
+  if (rostersLive) {
+    refreshBtn.hidden = false;
+    refreshBtn.addEventListener("click", () => { refreshBtn.disabled = true; refreshBtn.textContent = "Refreshing..."; location.reload(); });
+  }
+
+  // ---------- calculator ----------
+  const sides = { a: { team: "", ids: [] }, b: { team: "", ids: [] } };
+  let isExample = false, rostersReady = false;
+
+  function teamOptions(sel) {
+    const opts = ['<option value="">Any team</option>'].concat(
+      Object.entries(D.teams).sort((x, y) => x[1].localeCompare(y[1]))
+        .map(([rid, n]) => `<option value="${rid}"${String(sel) === rid ? " selected" : ""}>${esc(n)}</option>`));
+    return opts.join("");
+  }
+  function label(p) {
+    return `${p.name} (${p.pos}, ${p.team})${p.owner ? " · " + teamName(p.owner) : " · Free agent"}`;
+  }
+  function renderSide(key) {
+    const s = sides[key], el = document.getElementById("side-" + key);
+    const pool = D.players.filter(p => !s.team || String(p.owner) === String(s.team));
+    const chips = s.ids.map(id => byId[id]).filter(Boolean).map(p => `
+      <div class="chip${p.owner ? "" : " fa"}"><span class="who">${posBadge(p.pos)}${esc(p.name)}<small>${esc(p.team)}${p.owner ? "" : ' · <span class="fa-tag">Free agent</span>'}</small></span>
+      <span class="v num">${fmt(p.value)}</span>
+      <button class="x" type="button" aria-label="Remove ${esc(p.name)}" data-rm="${key}:${p.id}">×</button></div>`).join("");
+    const total = s.ids.reduce((t, id) => t + (byId[id] ? byId[id].value : 0), 0);
+    el.innerHTML = `
+      <label for="team-${key}">${s.team ? esc(teamName(s.team)) + " gives" : (key === "a" ? "Team A gives" : "Team B gives")}</label>
+      <select id="team-${key}">${teamOptions(s.team)}</select>
+      <input type="text" id="pick-${key}" list="list-${key}" placeholder="Type a player name" autocomplete="off" aria-label="Add a player for team ${key.toUpperCase()}">
+      <datalist id="list-${key}">${pool.map(p => `<option value="${esc(label(p))}"></option>`).join("")}</datalist>
+      <div class="chips">${chips || '<div class="empty">No players yet</div>'}</div>
+      <div class="side-total"><span>Total value</span><span class="num">${fmt(total)}</span></div>`;
+    el.querySelector("select").addEventListener("change", e => { sides[key] = { team: e.target.value, ids: [] }; isExample = false; render(); });
+    const pick = el.querySelector("input");
+    pick.addEventListener("change", () => {
+      const p = D.players.find(p => label(p) === pick.value);
+      if (p) { addTo(key, p.id); } else { pick.value = ""; }
+    });
+  }
+  function addTo(key, id) {
+    const s = sides[key], other = sides[key === "a" ? "b" : "a"];
+    if (s.ids.includes(id) || other.ids.includes(id)) return;
+    const p = byId[id];
+    if (!s.team && p.owner) s.team = String(p.owner);
+    s.ids.push(id);
+    isExample = false;
+    render();
+  }
+
+  // Same model as the weekly power rankings: best lineup + 25% of the top three bench players
+  const CANT_PLAY = new Set(["IR", "NA", "PUP", "Sus"]);  // keep trade value, but out of lineups and depth
+  function teamModel(ids) {
+    const ps = ids.map(id => byId[id]).filter(p => p && SLOTS[p.pos] !== undefined && !CANT_PLAY.has(p.injury));
+    const byPos = { QB: [], RB: [], WR: [], TE: [] };
+    ps.forEach(p => byPos[p.pos].push(p));
+    const starters = [];
+    for (const [pos, n] of Object.entries(SLOTS)) starters.push(...byPos[pos].sort((x, y) => y.value - x.value).slice(0, n));
+    const flex = ps.filter(p => FLEX.includes(p.pos) && !starters.includes(p)).sort((x, y) => y.value - x.value)[0];
+    if (flex) starters.push(flex);
+    const group = { QB: 0, RB: 0, WR: 0, TE: 0 };
+    starters.forEach(p => { group[p.pos] += p.value; });  // flex counts toward its own position, as in trade.py
+    const lineup = starters.reduce((t, p) => t + p.value, 0);
+    const bench = ps.filter(p => !starters.includes(p)).sort((x, y) => y.value - x.value).slice(0, 3);
+    const depth = bench.reduce((t, p) => t + p.value, 0);
+    return { group, lineup, depth, power: lineup + 0.25 * depth, starters: new Set(starters.map(p => p.id)) };
+  }
+  function league(rosters) {
+    const m = Object.fromEntries(Object.entries(rosters).map(([rid, ids]) => [rid, teamModel(ids)]));
+    const rids = Object.keys(m);
+    const rank = { power: {}, QB: {}, RB: {}, WR: {}, TE: {} };
+    rids.slice().sort((x, y) => m[y].power - m[x].power).forEach((rid, i) => rank.power[rid] = i + 1);
+    for (const pos of Object.keys(SLOTS)) rids.slice().sort((x, y) => m[y].group[pos] - m[x].group[pos]).forEach((rid, i) => rank[pos][rid] = i + 1);
+    return { m, rank };
+  }
+  const BASE = league(D.rosters);
+  const grade = r => r <= 3 ? "strong" : r >= 8 ? "weak" : "mid";
+  const cellsHtml = (rank, rid, before) => Object.keys(SLOTS).map(pos => {
+    const r = rank[pos][rid], was = before ? before[pos][rid] : r;
+    return `<div class="cell ${grade(r)}" title="${pos} rank ${r}">${r}${was !== r ? `<span class="was">was ${was}</span>` : ""}</div>`;
+  }).join("");
+
+  // Trade value = value over replacement (the best free agent), raised to POWER. Anyone at or below
+  // waiver level counts as zero, so throw-ins can't swing a verdict and the open-spot pickup nets out.
+  function weighted(ids) { return ids.reduce((t, id) => { const p = byId[id]; return t + (p ? Math.pow(Math.max(p.value - (REPL[p.pos] || 0), 0), POWER) : 0); }, 0); }
+  // Every player in a deal must be worth having: a starter for the team getting him, or better than waivers
+  function worthIt(ids, settled) { const st = teamModel(settled.ids).starters; return ids.every(id => st.has(id) || (byId[id] && byId[id].value > (REPL[byId[id].pos] || 0))); }
+
+  // Rosters stay the same size. The team taking more players drops its lowest-value players;
+  // the team taking fewer fills the open spot with the free agent that helps its roster most.
+  // Free agents worth picking up: healthy ones only (Out, Doubtful or worse can't fill a spot right now)
+  const FA_POOL = D.players.filter(p => !p.owner && !p.injury).slice(0, 30);
+  // Replacement level by position: the best free agent at each (waiver QBs and TEs are much weaker than RBs/WRs)
+  const REPL = Object.fromEntries(Object.keys(SLOTS).map(ps => [ps, (FA_POOL.find(p => p.pos === ps) || { value: 0 }).value]));
+  function settle(rid, out, inc, taken) {
+    let ids = (D.rosters[rid] || []).filter(id => !out.includes(id)).concat(inc);
+    const diff = inc.length - out.length, drop = [], add = [];
+    if (diff > 0) {
+      const spare = ids.filter(id => !inc.includes(id)).sort((x, y) => (byId[x] ? byId[x].value : 0) - (byId[y] ? byId[y].value : 0));
+      drop.push(...spare.slice(0, diff));
+      ids = ids.filter(id => !drop.includes(id));
+    }
+    for (let k = 0; k < -diff; k++) {
+      let best = null, bestPower = -1;
+      for (const fa of FA_POOL) {
+        if (ids.includes(fa.id) || add.includes(fa.id) || (taken && taken.includes(fa.id))) continue;
+        const pw = teamModel(ids.concat(fa.id)).power;
+        if (pw > bestPower) { bestPower = pw; best = fa.id; }
+      }
+      if (best) { add.push(best); ids = ids.concat(best); }
+    }
+    return { ids, drop, add };
+  }
+  // Value each team actually ends up with from the deal: what it receives, plus any waiver pickup, minus any forced drop
+  const netIn = (got, st) => weighted(got) + weighted(st.add) - weighted(st.drop);
+
+  function renderVerdict() {
+    const a = sides.a, b = sides.b;
+    const nameA = a.team ? teamName(a.team) : "Team A", nameB = b.team ? teamName(b.team) : "Team B";
+    const both = a.team && b.team && a.team !== b.team && a.ids.length && b.ids.length;
+    const sa = both ? settle(a.team, a.ids, b.ids) : { ids: [], drop: [], add: [] };
+    const sb = both ? settle(b.team, b.ids, a.ids, sa.add) : { ids: [], drop: [], add: [] };
+    const inA = netIn(b.ids, sa), inB = netIn(a.ids, sb);
+    const v = document.getElementById("verdict");
+    const balA = document.getElementById("bal-a"), balB = document.getElementById("bal-b");
+    if (!a.ids.length || !b.ids.length) {
+      v.textContent = "Add players to both sides"; v.className = "verdict-line";
+      balA.style.width = "0%"; balB.style.width = "0%";
+    } else {
+      // Team A's side of the bar = what A ends up with
+      const share = (inA + inB) > 0 ? inA / (inA + inB) : 0.5;
+      balA.style.width = (share * 100).toFixed(1) + "%"; balB.style.width = ((1 - share) * 100).toFixed(1) + "%";
+      const gap = Math.abs(inA - inB) / Math.max(inA, inB, 1);
+      if (gap < 0.08) { v.textContent = "Fair trade"; v.className = "verdict-line even"; }
+      else {
+        v.textContent = `${inA > inB ? nameA : nameB} wins this trade${gap > 0.25 ? " easily" : ""}`;
+        v.className = "verdict-line";
+      }
+    }
+    const imp = document.getElementById("impact");
+    if (both) {
+      imp.innerHTML = [[a, sa, nameA], [b, sb, nameB]].map(([me, st, nm]) => {
+        const mb = teamModel(D.rosters[me.team] || []), ma = teamModel(st.ids);
+        const delta = d => `<span class="${d > 0.05 ? "up" : d < -0.05 ? "down" : ""} num">${d > 0 ? "+" : ""}${fmt(d)}</span>`;
+        const moves = st.add.map(id => `<div class="move-note">Picks up <b>${esc(byId[id].name)}</b> (${byId[id].pos}, ${fmt(byId[id].value)}) off waivers for the open spot</div>`)
+          .concat(st.drop.map(id => `<div class="move-note">Drops <b>${esc(byId[id] ? byId[id].name : id)}</b>${byId[id] ? ` (${fmt(byId[id].value)})` : ""} to make room</div>`)).join("");
+        return `<div><div><b>${esc(nm)}</b> starting lineup ${delta(ma.lineup - mb.lineup)} · bench depth ${delta(ma.depth - mb.depth)}</div>${moves}</div>`;
+      }).join("");
+    } else {
+      imp.innerHTML = '<div>Pick a team for each side to see how their starting lineups change.</div><div></div>';
+    }
+    const ti = document.getElementById("ti");
+    if (both) {
+      const after = Object.assign({}, D.rosters);
+      after[a.team] = sa.ids;
+      after[b.team] = sb.ids;
+      const L2 = league(after);
+      ti.innerHTML = [a.team, b.team].map(rid => {
+        const pb = BASE.rank.power[rid], pa = L2.rank.power[rid];
+        const mv = pa < pb ? `<span class="up">▲${pb - pa}</span>` : pa > pb ? `<span class="down">▼${pa - pb}</span>` : "no change";
+        return `<div class="ti-team"><div class="ti-top"><span class="ti-name">${esc(teamName(rid))} after the trade</span>
+          <span class="ti-power">Power rank <b>${pa}</b> ${pb !== pa ? `(was ${pb}) ` : ""}${mv}</span></div>
+          <div class="cellhead"><span>QB</span><span>RB</span><span>WR</span><span>TE</span></div>
+          <div class="cells">${cellsHtml(L2.rank, rid, BASE.rank)}</div></div>`;
+      }).join("");
+    } else {
+      ti.innerHTML = "";
+    }
+    document.getElementById("example-note").textContent = isExample
+      ? "Example trade, taken from this week's suggestions. Clear it and build your own." : "";
+  }
+  function render() { renderSide("a"); renderSide("b"); renderVerdict(); if (rostersReady) renderCompare(); }
+  const render_calc = render;
+
+  document.addEventListener("click", e => {
+    const rm = e.target.closest("[data-rm]");
+    if (rm) {
+      const [key, id] = rm.dataset.rm.split(":");
+      sides[key].ids = sides[key].ids.filter(x => x !== id);
+      isExample = false; render();
+    }
+    const add = e.target.closest("[data-add]");
+    if (add) {
+      const p = byId[add.dataset.add];
+      const key = sides.a.team && String(p.owner) === sides.a.team ? "a"
+        : sides.b.team && String(p.owner) === sides.b.team ? "b"
+        : !sides.a.team && !sides.a.ids.length ? "a" : "b";
+      addTo(key, p.id);
+      if (!document.getElementById("trade").hidden) return;  // already on the trade page (adding from the rosters)
+      go("trade");
+    }
+  });
+  document.getElementById("reset").addEventListener("click", () => {
+    sides.a.ids = []; sides.b.ids = []; isExample = false; render();  // keeps both teams picked
+  });
+
+  // Example: a suggestion from the weekly trade sheet, if its players are still on those rosters
+  const ex = D.example;
+  if (ex && ex.a.every(id => byId[id]) && ex.b.every(id => byId[id])) {
+    sides.a = { team: String(ex.teamA), ids: ex.a.slice() };
+    sides.b = { team: String(ex.teamB), ids: ex.b.slice() };
+    isExample = true;
+  }
+  render();
+
+  // ---------- power rankings ----------
+  const order = Object.keys(D.rosters).sort((x, y) => BASE.rank.power[x] - BASE.rank.power[y]);
+  const pts = order.map(rid => BASE.m[rid].power);
+  const pTop = Math.max(...pts), pLo = 0.8 * Math.min(...pts);
+  function renderPower() {
+  document.getElementById("ptable").innerHTML =
+    `<div class="prow head"><span>#</span><span>Team</span><span class="bar-h">Score</span>
+      <div class="cellhead"><span>QB</span><span>RB</span><span>WR</span><span>TE</span></div></div>` +
+    order.map(rid => `<div class="prow${rid === mine ? " mine" : ""}" role="button" tabindex="0" data-team="${rid}">
+      <div class="prank">${BASE.rank.power[rid]}</div>
+      <div class="pteam">${rid === mine ? '<span class="mine-dot" aria-label="Your team"></span>' : ""}${esc(teamName(rid))}<small>${esc((D.records || {})[rid] || "")}</small></div>
+      <div class="pval"><span class="pscore num" title="Roster strength, top team = 100">${Math.round(100 * BASE.m[rid].power / pTop)}</span>
+        <div class="pbar"><i style="width:${(100 * (BASE.m[rid].power - pLo) / (pTop - pLo)).toFixed(0)}%"></i></div></div>
+      <div class="cells">${cellsHtml(BASE.rank, rid)}</div></div>`).join("");
+  }
+  renderPower();
+  function showTeam(rid) {
+    // Open Trade: my team v the team tapped (or, tapping my own row, me v my current trade partner)
+    const me = mine ? String(mine) : "";
+    if (me && rid !== me) sides.a = { team: me, ids: [] }, sides.b = { team: rid, ids: [] };
+    else if (!me) sides.b = { team: rid, ids: [] };
+    isExample = false; render(); go("trade");
+  }
+  document.getElementById("ptable").addEventListener("click", e => { const r = e.target.closest("[data-team]"); if (r) showTeam(r.dataset.team); });
+  document.getElementById("ptable").addEventListener("keydown", e => {
+    const r = e.target.closest("[data-team]"); if (r && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); showTeam(r.dataset.team); }
+  });
+
+  // ---------- roster comparison ----------
+  function renderCompare() {
+    const cA = sides.a.team, cB = sides.b.team, el = document.getElementById("cmp");
+    if (!cA || !cB || cA === cB) { el.innerHTML = '<div class="empty">Pick two different teams above to see their rosters.</div>'; return; }
+    const ma = BASE.m[cA], mb = BASE.m[cB];
+    const vMax = D.players[0] ? D.players[0].value : 100;
+    const col = (rid, m, other) => {
+      const ids = (D.rosters[rid] || []).map(id => byId[id]).filter(Boolean);
+      const better = (x, y) => x > y + 0.05 ? "win" : "";
+      const groups = ["QB", "RB", "WR", "TE"].map(pos => {
+        const ps = ids.filter(p => p.pos === pos).sort((x, y) => y.value - x.value);
+        const tot = ps.reduce((t, p) => t + p.value, 0);
+        return `<div class="rgroup"><h3><span>${posBadge(pos)}league rank ${BASE.rank[pos][rid]}</span><span class="num">${fmt(tot)}</span></h3>` +
+          ps.map(p => {
+            const st = m.starters.has(p.id);
+            return `<div class="rp${st ? "" : " bench"}"><span class="nm">${st ? '<span class="tag-s">S</span>' : ""}${esc(p.name)}<small>${esc(p.team)}${p.injury ? " · " + esc(p.injury === "NA" ? "inactive" : p.injury) : ""}</small></span>
+              <span class="vnum num">${fmt(p.value)}</span><span class="mini"><i style="width:${(100 * p.value / vMax).toFixed(0)}%"></i></span>
+              <button class="add sm" type="button" data-add="${p.id}" aria-label="Add ${esc(p.name)} to the trade">+</button></div>`;
+          }).join("") + `</div>`;
+      }).join("");
+      return `<div class="roster">
+        <div class="roster-head"><div class="roster-title"><b>${rid === mine ? '<span class="mine-dot" aria-hidden="true"></span>' : ""}${esc(teamName(rid))}</b>
+          <span>${esc((D.records || {})[rid] || "")} · power #${BASE.rank.power[rid]}</span></div>
+          <div class="totals">
+            <div class="tot"><small>Starters</small><b class="num ${better(m.lineup, other.lineup)}">${fmt(m.lineup)}</b></div>
+            <div class="tot"><small>Top 3 bench</small><b class="num ${better(m.depth, other.depth)}">${fmt(m.depth)}</b></div>
+            <div class="tot"><small>Power</small><b class="num ${better(m.power, other.power)}">${fmt(m.power)}</b></div>
+          </div></div>${groups}</div>`;
+    };
+    el.innerHTML = col(cA, ma, mb) + col(cB, mb, ma);
+  }
+
+  // Fair deals between two teams that improve both lineups (used by Ask's find_trades tool)
+  function findDeals(ta, tb) {
+    const ra = D.rosters[ta] || [], rb = D.rosters[tb] || [];
+    const la = BASE.m[ta].lineup, lb = BASE.m[tb].lineup;
+    const pool = ids => ids.filter(id => byId[id] && byId[id].value >= 8);
+    const pa = pool(ra), pb = pool(rb);
+    const pairs = xs => xs.flatMap((x, i) => xs.slice(i + 1).map(y => [x, y]));
+    const cands = [];
+    pa.forEach(x => pb.forEach(y => cands.push([[x], [y]])));
+    pairs(pa).forEach(xs => pb.forEach(y => cands.push([xs, [y]])));
+    pa.forEach(x => pairs(pb).forEach(ys => cands.push([[x], ys])));
+    const out = [];
+    for (const [give, get] of cands) {
+      // Cheap pre-check before the roster moves are worked out
+      const wa = weighted(give), wb = weighted(get);
+      if (Math.abs(wa - wb) / Math.max(wa, wb, 1) > 0.3) continue;
+      const sa = settle(ta, give, get), sb = settle(tb, get, give, sa.add);
+      if (!worthIt(get, sa) || !worthIt(give, sb)) continue;
+      const inA = netIn(get, sa), inB = netIn(give, sb);
+      if (Math.abs(inA - inB) / Math.max(inA, inB, 1) >= 0.08) continue;  // same bar as the "Fair trade" verdict
+      const ga = teamModel(sa.ids).lineup - la;
+      if (ga <= 1) continue;
+      const gb = teamModel(sb.ids).lineup - lb;
+      if (gb <= 1) continue;
+      out.push({ give, get, ga, gb, sa, sb, score: Math.min(ga, gb) });
+    }
+    out.sort((x, y) => y.score - x.score);
+    // Up to three, never reusing a player
+    const used = new Set(), picks = [];
+    for (const d of out) {
+      if (d.give.concat(d.get).some(id => used.has(id))) continue;
+      d.give.concat(d.get).forEach(id => used.add(id));
+      picks.push(d);
+      if (picks.length === 3) break;
+    }
+    return picks;
+  }
+
+  // Open Trade on my team v the top-ranked other team, unless the weekly example is loaded
+  if (!sides.a.team && !sides.b.team && mine) { sides.a.team = String(mine); sides.b.team = order.find(t => t !== String(mine)) || ""; }
+  rostersReady = true;
+  render();
+
+  // ---------- value board ----------
+  const state = { q: "", pos: "ALL", owner: "" };
+  const posSeg = document.getElementById("pos-seg");
+  posSeg.innerHTML = ["ALL", "QB", "RB", "WR", "TE", "FLEX"].map(p => `<button type="button" data-pos="${p}" aria-pressed="${p === "ALL"}">${p}</button>`).join("");
+  posSeg.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.pos = b.dataset.pos;
+    posSeg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    renderBoard();
+  });
+  const ownerSel = document.getElementById("owner-filter");
+  ownerSel.innerHTML = '<option value="">All players</option><option value="FA">Free agents</option>' +
+    Object.entries(D.teams).sort((x, y) => x[1].localeCompare(y[1])).map(([rid, n]) => `<option value="${rid}">${esc(n)}</option>`).join("");
+  ownerSel.addEventListener("change", e => { state.owner = e.target.value; renderBoard(); });
+  document.getElementById("q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); renderBoard(); });
+
+  document.getElementById("thead").innerHTML =
+    `<th>#</th><th>Player</th><th class="owner-col">Owner</th><th>Value</th>` +
+    D.sources.map(s => `<th class="r src-col">${SRC_LABEL[s] || s}</th>`).join("") + `<th></th>`;
+
+  const top = D.players[0] ? D.players[0].value : 100;
+  const posRank = {};
+  const counters = {};
+  D.players.forEach(p => { counters[p.pos] = (counters[p.pos] || 0) + 1; posRank[p.id] = p.pos + counters[p.pos]; });
+
+  function renderBoard() {
+    const rows = D.players.filter(p =>
+      (state.pos === "ALL" || p.pos === state.pos || (state.pos === "FLEX" && FLEX.includes(p.pos))) &&
+      (!state.owner || (state.owner === "FA" ? !p.owner : String(p.owner) === state.owner)) &&
+      (!state.q || p.name.toLowerCase().includes(state.q)));
+    const fas = rows.filter(p => !p.owner).length;
+    document.getElementById("count").textContent = `${rows.length} player${rows.length === 1 ? "" : "s"}, ${fas} free agent${fas === 1 ? "" : "s"}`;
+    document.getElementById("tbody").innerHTML = rows.map((p, i) => {
+      const call = p.call ? `<span class="pill ${p.call}">${p.call === "shop" ? "shop" : p.call}</span>` : "";
+      const inj = p.injury ? `<span class="pill inj">${esc(p.injury === "NA" ? "inactive" : p.injury)}</span>` : "";
+      return `<tr${!p.owner ? ' class="fa"' : isMine(p) ? ' class="mine"' : ""}>
+        <td class="rank num">${i + 1}</td>
+        <td class="player">${isMine(p) ? '<span class="mine-dot" aria-label="Your player"></span>' : ""}<span class="pname">${esc(p.name)}</span>${call}${inj}<div class="meta">${posBadge(p.pos, posRank[p.id])}${esc(p.team)}<span class="m-owner"> · ${p.owner ? esc(teamName(p.owner)) : '<span class="m-fa">Free agent</span>'}</span></div></td>
+        <td class="owner-col">${p.owner ? esc(teamName(p.owner)) : '<span class="owner-fa">Free agent</span>'}</td>
+        <td><div class="vcell"><span class="vnum num">${fmt(p.value)}</span><span class="vbar"><i style="width:${(100 * p.value / top).toFixed(1)}%"></i></span></div></td>
+        ${D.sources.map(s => `<td class="r num src src-col">${p.sources[s] != null ? p.sources[s] : "–"}</td>`).join("")}
+        <td class="r"><button class="add" type="button" data-add="${p.id}" aria-label="Add ${esc(p.name)} to the trade">+<span class="add-label"> Trade</span></button></td>
+      </tr>`;
+    }).join("");
+  }
+  renderBoard();
+
+  // ---------- pages ----------
+  const PAGES = ["power", "trade", "values"].filter(id => document.getElementById(id));
+  const OLD = { calculator: "trade", compare: "trade" };  // links from before the merge
+  const HOME = PAGES[0];
+  function go(page, fromLoad) {
+    page = OLD[page] || page;
+    if (!PAGES.includes(page)) page = HOME;
+    PAGES.forEach(p => {
+      document.getElementById(p).hidden = p !== page;
+      document.getElementById("tab-" + p).setAttribute("aria-selected", String(p === page));
+    });
+    try { localStorage.setItem("ft-page", page); } catch (e) {}
+    try { history.replaceState(null, "", "#" + page); } catch (e) {}
+    if (!fromLoad) window.scrollTo({ top: 0 });
+  }
+  document.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+  let startPage = (location.hash || "").slice(1);
+  if (!startPage) { try { startPage = localStorage.getItem("ft-page") || HOME; } catch (e) { startPage = HOME; } }
+  go(startPage, true);
+
+  // ---------- ask ----------
+  
+})();
+</script>
+</body></html>
